@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EasySampler — WDG Technologies</title>
+  <meta name="description" content="Sampler VST3 para Windows. Carga un WAV, FLAC o MP3 y tócalo con MIDI." />
+  <link rel="icon" href="logo.png" />
+  <style>
+    :root {
+      --bg: #0c0e12;
+      --panel: #161b22;
+      --line: #2a323e;
+      --mint: #7ee0c8;
+      --mint-dim: #4aa892;
+      --ink: #e8eef2;
+      --mute: #8b959f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, sans-serif; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 480px at 70% -10%, rgba(126, 224, 200, 0.12), transparent 55%),
+        radial-gradient(700px 400px at 0% 100%, rgba(126, 224, 200, 0.06), transparent 50%),
+        var(--bg);
+    }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 64px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 56px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand img { width: 42px; height: 42px; border-radius: 10px; }
+    .brand strong { font-size: 15px; letter-spacing: 0.04em; }
+    .brand span { display: block; color: var(--mute); font-size: 12px; font-weight: 400; }
+    nav a { color: var(--mute); text-decoration: none; font-size: 14px; }
+    nav a:hover { color: var(--mint); }
+
+    .hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px; align-items: center; }
+    @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+
+    .kicker { color: var(--mint); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px; }
+    h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.05; font-weight: 650; margin-bottom: 16px; }
+    .lead { color: var(--mute); font-size: 17px; line-height: 1.55; max-width: 42ch; margin-bottom: 28px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 48px; padding: 0 22px; border-radius: 12px; font-weight: 650; font-size: 15px;
+      text-decoration: none; border: 1px solid transparent;
+    }
+    .btn-main { background: var(--mint); color: #10161a; }
+    .btn-main:hover { background: #9aead6; }
+    .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+    .btn-ghost:hover { border-color: var(--mint); color: var(--mint); }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-size: 12px; color: var(--mute); border: 1px solid var(--line);
+      padding: 6px 10px; border-radius: 999px; letter-spacing: 0.04em;
+    }
+
+    .stage { perspective: 1200px; }
+    .plugin {
+      background: #0e1014;
+      border: 1px solid #2a323e;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(126,224,200,.08);
+      transform: rotateY(-8deg) rotateX(4deg);
+    }
+    @media (max-width: 860px) { .plugin { transform: none; } }
+    .plug-top { display: flex; align-items: center; gap: 12px; background: #161b22; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+    .plug-top img { width: 40px; height: 40px; border-radius: 9px; }
+    .plug-top h2 { color: var(--mint); font-size: 20px; font-weight: 650; }
+    .plug-top p { color: var(--mute); font-size: 12px; }
+    .card { background: #181d24; border: 1px solid #2a323e; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+    .row { display: flex; gap: 10px; align-items: center; }
+    .load {
+      background: var(--mint); color: #10161a; border: 0; border-radius: 10px;
+      height: 40px; padding: 0 16px; font-weight: 700; font-size: 14px;
+    }
+    .name {
+      flex: 1; height: 40px; border-radius: 10px; background: #12161c; border: 1px solid #303844;
+      color: #d2d8de; display: flex; align-items: center; padding: 0 12px; font-size: 13px;
+    }
+    .lbl { color: var(--mint); font-size: 11px; letter-spacing: 0.12em; font-weight: 700; margin: 14px 0 8px; }
+    .root {
+      height: 44px; border-radius: 12px; background: #202630; border: 1px solid var(--mint-dim);
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+    .auto { color: var(--mint); font-size: 12px; margin-top: 8px; }
+    .pedal-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 12px; align-items: center; }
+    .pedal {
+      height: 42px; border-radius: 16px; background: var(--mint); color: #10161a;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;
+    }
+    .slide { height: 16px; background: #12161c; border-radius: 8px; border: 1px solid #303844; position: relative; }
+    .slide i { position: absolute; left: 8px; top: 5px; height: 6px; width: 58%; background: var(--mint); border-radius: 6px; }
+    .slide b { position: absolute; left: 58%; top: -3px; width: 16px; height: 22px; margin-left: -8px; background: #f0f8f6; border: 1px solid var(--mint); border-radius: 50%; }
+    .sec { color: var(--mint); font-size: 13px; font-weight: 700; }
+    .check { display: flex; gap: 10px; align-items: center; margin-top: 14px; color: #c8d0d6; font-size: 14px; }
+    .box { width: 18px; height: 18px; border-radius: 4px; background: var(--mint); color: #10161a; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+    .specs { margin-top: 72px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 860px) { .specs { grid-template-columns: 1fr; } }
+    .spec { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+    .spec h3 { font-size: 15px; margin-bottom: 8px; }
+    .spec p { color: var(--mute); font-size: 14px; line-height: 1.5; }
+
+    footer { margin-top: 56px; color: var(--mute); font-size: 12px; line-height: 1.6; border-top: 1px solid var(--line); padding-top: 20px; }
+    footer a { color: var(--mint); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="index.html">
+        <img src="logo.png" alt="EasySampler" />
+        <div>
+          <strong>EasySampler</strong>
+          <span>WDG Technologies</span>
+        </div>
+      </a>
+      <nav><a href="https://github.com/WDG-Technologies/EasySample/releases">Versiones</a></nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="kicker">Instrumento VST3</p>
+        <h1>Un sample.<br />Todas las notas.</h1>
+        <p class="lead">Carga un WAV, FLAC o MP3 y tócalo desde el piano roll, un teclado MIDI o el pedal de sustain. Sampler de canal, sin librerías ni capas.</p>
+        <div class="cta">
+          <a class="btn btn-main" href="https://github.com/WDG-Technologies/EasySample/releases/download/v1.0/EasySampler-0.2.0.msi">Descargar para Windows</a>
+          <a class="btn btn-ghost" href="https://github.com/WDG-Technologies/EasySample/releases/latest">Notas de la versión</a>
+        </div>
+        <div class="meta">
+          <span class="chip">VST3 64-bit</span>
+          <span class="chip">Windows 10 / 11</span>
+          <span class="chip">Standalone</span>
+          <span class="chip">v1.0</span>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="plugin" aria-hidden="true">
+          <div class="plug-top">
+            <img src="logo.png" alt="" />
+            <div>
+              <h2>EasySampler</h2>
+              <p>WDG Technologies</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row">
+              <button class="load" type="button">Cargar sample</button>
+              <div class="name">piano_c3.wav</div>
+            </div>
+            <div class="lbl">ROOT NOTE</div>
+            <div class="root">C3 &nbsp; MIDI 60</div>
+            <p class="auto">detectada automaticamente</p>
+          </div>
+          <div class="card">
+            <div class="lbl">SUSTAIN / PEDAL</div>
+            <div class="pedal-row">
+              <div class="pedal">PEDAL ON</div>
+              <div>
+                <div class="slide"><i></i><b></b></div>
+              </div>
+              <div class="sec">0.35 s</div>
+            </div>
+            <div class="check"><span class="box">v</span> Cortar nota anterior al tocar otra</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="specs">
+      <article class="spec">
+        <h3>Root note</h3>
+        <p>La tecla que reproduce el sample en su tono original. El resto transpone. Se detecta sola o la eliges tú.</p>
+      </article>
+      <article class="spec">
+        <h3>Pedal y release</h3>
+        <p>CC64 o el botón de la UI. Al soltar, la cola se funde. Modo mono para no apilar notas.</p>
+      </article>
+      <article class="spec">
+        <h3>En el proyecto</h3>
+        <p>El audio queda en el estado del plugin. Reabres la sesión y el sample sigue ahí.</p>
+      </article>
+    </section>
+
+    <footer>
+      <p>Instalador MSI: plugin en <code>C:\Program Files\Common Files\VST3\</code> y app Standalone en el menú Inicio.</p>
+      <p>Software de código cerrado. VST es marca de <a href="https://www.steinberg.net/">Steinberg Media Technologies GmbH</a>.</p>
+    </footer>
+  </div>
+</body>
+</html>
