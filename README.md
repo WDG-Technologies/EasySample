@@ -1,32 +1,31 @@
 # EasySampler
 
-Página pública de **EasySampler**, el sampler VST3 de [WDG Technologies](https://github.com/WDG-Technologies).
+**Tu sample. Todas las notas.**
 
-## Qué es
+EasySampler es un instrumento VST3 de [WDG Technologies](https://github.com/WDG-Technologies): cargas un WAV, FLAC o MP3 y lo tocas como un synth. Un hit, un chord, una voz, un pad — lo melodizas en el piano roll, con teclado MIDI o con el pedal.
 
-EasySampler convierte **un archivo de audio** (WAV, FLAC o MP3) en un instrumento MIDI. Lo cargas, eliges o dejas detectar la **root note**, y lo tocas en el piano roll, con un teclado o con el pedal de sustain (CC64).
+No es un rompler. No hay librerías ni capas. Es el sampler de canal que abres, cargas y ya estás escribiendo.
 
-Sirve para melodizar un one-shot, un chord o una frase sin armar un sampler grande. Un sample a la vez, hasta 16 voces. El audio queda guardado en el proyecto de la DAW.
+## El problema
 
-También incluye una app **Standalone** para probarlo sin abrir el host.
+Tienes un audio que suena bien. Quieres tocarlo en otras notas, con cola, con pedal, en modo mono si hace falta. Montar eso en un sampler grande te frena. EasySampler no.
 
-## Descarga
+## Cómo trabaja
 
-- **Windows 10 / 11**, 64-bit
-- Plugin **VST3** + instalador MSI + Standalone
-- [Descargar EasySampler-0.2.0.msi](https://github.com/WDG-Technologies/EasySample/releases/download/v1.0/EasySampler-0.2.0.msi)
-- [Todas las versiones](https://github.com/WDG-Technologies/EasySample/releases)
+Cargas el archivo. Detecta (o tú eliges) la **root note**: esa tecla suena al tono original; el resto transpone limpio, con resample sinc. Hasta **16 voces**. Al soltar, el **release** funde la cola. El **pedal** (CC64) sostiene. **Cortar nota anterior** apaga la de atrás para bajos y leads.
 
-Tras instalar: el VST3 queda en `C:\Program Files\Common Files\VST3\` y el Standalone en el menú Inicio. En la DAW, rescanea plugins.
+El sample va **dentro del proyecto**. Cierras la DAW, la abres, sigue ahí.
 
-## Página web
+Si la tecla dura más que el archivo, el audio se acaba (one-shot, como un sampler de canal). Si sueltas antes, entra el release.
 
-`index.html` es la landing de descarga (logo, mock de la UI y botón del MSI). Si activas GitHub Pages en este repo (branch `main`, carpeta `/`), se publica en:
+## Qué incluye
 
-https://wdg-technologies.github.io/EasySample/
+- Plugin **VST3 64-bit** para Windows 10 / 11  
+- App **Standalone** (MIDI o teclas Z–M)  
+- Instalador MSI  
 
-## Licencia
+[**Descargar EasySampler**](https://github.com/WDG-Technologies/EasySample/releases/download/v1.0/EasySampler-0.2.0.msi) · [Versiones](https://github.com/WDG-Technologies/EasySample/releases) · [Página](https://wdg-technologies.github.io/EasySample/)
 
-El plugin es **código cerrado**. Este repositorio solo publica la página y el instalador, no el source.
+Tras instalar: VST3 en `C:\Program Files\Common Files\VST3\`. Rescanea plugins en tu DAW.
 
-VST es marca de Steinberg Media Technologies GmbH.
+Código cerrado. VST es marca de Steinberg Media Technologies GmbH.
